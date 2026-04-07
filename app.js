@@ -1,6 +1,4 @@
-// ==============================
-// GLOBAL VARIABLES
-// ==============================
+const API_KEY =AIzaSyC2vuDX-mAgbXuAiPymRrYXFjwembU3Wws;
 let currentQuery = "";
 let currentStartIndex = 0;
 const RESULTS_PER_PAGE = 10;
@@ -23,7 +21,7 @@ $("#search-button").on("click", function () {
 // FETCH BOOKS (SEARCH)
 // ==============================
 function fetchBooks(query, startIndex) {
-    const apiUrl = `https://www.googleapis.com/books/v1/volumes?q=${query}&startIndex=${startIndex}&maxResults=10`;
+    const apiUrl = `https://www.googleapis.com/books/v1/volumes?q=${query}&startIndex=${startIndex}&maxResults=10&key=${AIzaSyC2vuDX-mAgbXuAiPymRrYXFjwembU3Wws}`;
 
     $("#results-container").html("<p>Loading...</p>");
 
