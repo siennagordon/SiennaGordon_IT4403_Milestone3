@@ -20,32 +20,41 @@ $("#search-button").on("click", function () {
 });
 
 function fetchBooks(query, startIndex) {
-    const apiUrl = `https://www.googleapis.com/books/v1/volumes?q=${query}&startIndex=${startIndex}&maxResults=10&key=${API_KEY}`;
+
+    if (!query) {
+        $("#results-container").html("<p>Please enter a search term.</p>");
+        return;
+    }
+
+    const apiUrl = `https://www.googleapis.com/books/v1/volumes?q=${encodeURIComponent(query)}&startIndex=${startIndex}&maxResults=10`;
 
     console.log("Fetching:", apiUrl);
-    
-    $("#results-container").html("<p>Loading...</p>");
 
-    $.getJSON(apiUrl) 
-              .done (function (response) {
+    $.getJSON(apiUrl)
+        .done(function (response) {
+            console.log(response);
 
-        console.log("API Response:",response); // 🔥 DEBUG LINE
+            if (!response.items) {
+                $("#results-container").html("<p>No results found.</p>");
+                return;
+            }
 
-        if (!response.items) {
-            $("#results-container").html("<p>No results found.</p>");
-            return;
-        }
+            $("#results-container").empty();
 
-        renderBookResults(response.items);
-        renderPagination();
-    })
-    .fail(function (xhr, status, error) {
-    console.log("STATUS:", status);
-    console.log("ERROR:", error);
-    console.log("FULL RESPONSE:", xhr);
+            response.items.forEach(function (book) {
+                const info = book.volumeInfo;
 
-    $("#results-container").html("<p>Error fetching data.</p>");
-});
+                $("#results-container").append(`
+                    <div>
+                        <h3>${info.title}</h3>
+                    </div>
+                `);
+            });
+        })
+        .fail(function () {
+            $("#results-container").html("<p>Error fetching data.</p>");
+        });
+}
 
 
 
