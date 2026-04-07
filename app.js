@@ -112,7 +112,7 @@ function displayBookDetails(book) {
 
 
 function loadFeaturedBooks() {
-    const apiUrl = `https://www.googleapis.com/books/v1/volumes?q=bestsellers&maxResults=10&key=${AIzaSyC2vuDX-mAgbXuAiPymRrYXFjwembU3Wws`;
+    const apiUrl = `https://www.googleapis.com/books/v1/volumes?q=bestsellers&maxResults=10&key=${AIzaSyC2vuDX-mAgbXuAiPymRrYXFjwembU3Wws}`;
 
     $.getJSON(apiUrl, function (response) {
         if (!response.items) return;
