@@ -6,13 +6,12 @@ const MAX_PAGES = 5;
 
 
 $("#search-button").on("click", function () {
-    
+    console.log("CLICK WORKS");
+
     const inputValue = $("#search-input").val();
 
-    console.log("Input value:", inputValue); // DEBUG
-
-    if (!inputValue || inputValue.trim() === "") {
-        alert("Please enter a search term.");
+    if (!inputValue) {
+        alert("Enter a search term");
         return;
     }
 
@@ -21,19 +20,13 @@ $("#search-button").on("click", function () {
 });
 
 function fetchBooks(query, startIndex) {
-
-    if (!query) {
-        $("#results-container").html("<p>Please enter a search term.</p>");
-        return;
-    }
-
     const apiUrl = `https://www.googleapis.com/books/v1/volumes?q=${encodeURIComponent(query)}&startIndex=${startIndex}&maxResults=10`;
 
-    console.log("Fetching:", apiUrl);
+    console.log("API URL:", apiUrl);
 
     $.getJSON(apiUrl)
         .done(function (response) {
-            console.log(response);
+            console.log("API RESPONSE:", response);
 
             if (!response.items) {
                 $("#results-container").html("<p>No results found.</p>");
@@ -52,8 +45,8 @@ function fetchBooks(query, startIndex) {
                 `);
             });
         })
-        .fail(function () {
-            $("#results-container").html("<p>Error fetching data.</p>");
+        .fail(function (err) {
+            console.log("API FAILED:", err);
         });
 }
 
