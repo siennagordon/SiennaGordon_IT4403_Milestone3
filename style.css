@@ -1,0 +1,25 @@
+body {
+    font-family: Arial;
+    padding: 20px;
+}
+
+#results, #collection {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 15px;
+}
+
+.book {
+    width: 150px;
+    cursor: pointer;
+}
+
+.book img {
+    width: 100%;
+}
+
+#details {
+    margin-top: 20px;
+    border-top: 2px solid #ccc;
+    padding-top: 10px;
+}
