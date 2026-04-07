@@ -6,12 +6,12 @@ const MAX_PAGES = 5;
 
 
 $("#search-button").on("click", function () {
-    console.log("CLICK WORKS");
-
     const inputValue = $("#search-input").val();
 
-    if (!inputValue) {
-        alert("Enter a search term");
+    console.log("Input value:", inputValue); // DEBUG
+
+    if (!inputValue || inputValue.trim() === "") {
+        alert("Please enter a search term.");
         return;
     }
 
