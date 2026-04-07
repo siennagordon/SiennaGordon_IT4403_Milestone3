@@ -4,9 +4,7 @@ let currentStartIndex = 0;
 const RESULTS_PER_PAGE = 10;
 const MAX_PAGES = 5;
 
-// ==============================
-// EVENT LISTENERS
-// ==============================
+
 $("#search-button").on("click", function () {
     currentQuery = $("#search-input").val().trim();
     currentStartIndex = 0;
@@ -17,9 +15,7 @@ $("#search-button").on("click", function () {
 }
 });
 
-// ==============================
-// FETCH BOOKS (SEARCH)
-// ==============================
+
 function fetchBooks(query, startIndex) {
     const apiUrl = `https://www.googleapis.com/books/v1/volumes?q=${query}&startIndex=${startIndex}&maxResults=10&key=${AIzaSyC2vuDX-mAgbXuAiPymRrYXFjwembU3Wws}`;
 
@@ -43,9 +39,7 @@ function fetchBooks(query, startIndex) {
 }
 }
 
-// ==============================
-// RENDER SEARCH RESULTS
-// ==============================
+
 function renderBookResults(books) {
     $("#results-container").empty();
 
@@ -66,9 +60,7 @@ function renderBookResults(books) {
     });
 }
 
-// ==============================
-// PAGINATION
-// ==============================
+
 function renderPagination() {
     $("#pagination-container").empty();
 
@@ -91,9 +83,7 @@ $(document).on("click", ".pagination-button", function () {
     fetchBooks(currentQuery, currentStartIndex);
 });
 
-// ==============================
-// FETCH BOOK DETAILS
-// ==============================
+
 $(document).on("click", ".book-card", function () {
     const bookId = $(this).data("book-id");
     const apiUrl = `https://www.googleapis.com/books/v1/volumes/${bookId}`;
@@ -103,9 +93,7 @@ $(document).on("click", ".book-card", function () {
     });
 });
 
-// ==============================
-// DISPLAY BOOK DETAILS
-// ==============================
+
 function displayBookDetails(book) {
     const volumeInfo = book.volumeInfo;
 
@@ -122,11 +110,9 @@ function displayBookDetails(book) {
     $("#details-container").html(detailsHTML);
 }
 
-// ==============================
-// LOAD FEATURED COLLECTION
-// ==============================
+
 function loadFeaturedBooks() {
-    const apiUrl = `https://www.googleapis.com/books/v1/volumes?q=bestsellers&maxResults=10`;
+    const apiUrl = `https://www.googleapis.com/books/v1/volumes?q=bestsellers&maxResults=10&key=${AIzaSyC2vuDX-mAgbXuAiPymRrYXFjwembU3Wws`;
 
     $.getJSON(apiUrl, function (response) {
         if (!response.items) return;
@@ -149,7 +135,6 @@ function loadFeaturedBooks() {
     });
 }
 
-// Initialize collection on page load
 $(document).ready(function () {
     loadFeaturedBooks();
 });
