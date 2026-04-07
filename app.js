@@ -37,7 +37,7 @@ function fetchBooks(query, startIndex) {
         $("#results-container").html("<p>Error fetching data.</p>");
     });
 }
-}
+
 
 
 function renderBookResults(books) {
