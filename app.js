@@ -6,14 +6,17 @@ const MAX_PAGES = 5;
 
 
 $("#search-button").on("click", function () {
-    console.log("Search clicked");
-    currentQuery = $("#search-input").val().trim();
-    currentStartIndex = 0;
+    console.log("CLICK WORKS");
 
-    if (!currentQuery) {
-    alert("Please enter a search term.");
-    return;
-}
+    const inputValue = $("#search-input").val();
+
+    if (!inputValue) {
+        alert("Enter a search term");
+        return;
+    }
+
+    const query = inputValue.trim();
+    fetchBooks(query, 0);
 });
 
 function fetchBooks(query, startIndex) {
