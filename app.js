@@ -6,11 +6,10 @@ const MAX_PAGES = 5;
 
 
 $("#search-button").on("click", function () {
-    console.log("CLICK WORKS");
 
     const inputValue = $("#search-input").val();
 
-    if (!inputValue) {
+    if (!inputValue || inputValue.trim() === "") {
         alert("Enter a search term");
         return;
     }
@@ -20,13 +19,20 @@ $("#search-button").on("click", function () {
 });
 
 function fetchBooks(query, startIndex = 0) {
-    const apiUrl = `https://www.googleapis.com/books/v1/volumes?q=${encodeURIComponent(query)}&startIndex=${startIndex}&maxResults=10&key=${API_KEY}`;
-    
+
+    if (!query || query.trim() === "") {
+        $("#results-container").html("<p>Please enter a search term.</p>");
+        return;
+    }
+
+    currentQuery = query; // ✅ FIX: store query for pagination
+
+    const apiUrl = `https://www.googleapis.com/books/v1/volumes?q=${encodeURIComponent(query)}&startIndex=${startIndex}&maxResults=10`;
+
     console.log("Fetching:", apiUrl);
-    
+
     $.getJSON(apiUrl)
         .done(function(response) {
-            console.log("API Response:", response);
 
             if (!response.items || response.items.length === 0) {
                 $("#results-container").html("<p>No results found.</p>");
@@ -34,28 +40,27 @@ function fetchBooks(query, startIndex = 0) {
             }
 
             $("#results-container").empty();
+
             response.items.forEach(function(book) {
                 const info = book.volumeInfo;
                 const title = info.title || "No title";
-                const thumbnail = info.imageLinks?.thumbnail || "";
+
+                let thumbnail = "https://via.placeholder.com/150x200?text=No+Image";
+                if (info.imageLinks && info.imageLinks.thumbnail) {
+                    thumbnail = info.imageLinks.thumbnail.replace("http://", "https://");
+                }
+
                 $("#results-container").append(`
-                    <div class="book-card" data-id="${book.id}">
+                    <div class="book-card" data-book-id="${book.id}">
                         <h3>${title}</h3>
                         <img src="${thumbnail}" alt="${title}">
                     </div>
                 `);
             });
 
-            // Simple pagination
-            $("#pagination-container").html("");
-            for (let i = 0; i < Math.min(5, Math.ceil(response.totalItems / 10)); i++) {
-                $("#pagination-container").append(`
-                    <button class="pagination-button" data-start-index="${i * 10}">${i + 1}</button>
-                `);
-            }
+            renderPagination();
         })
-        .fail(function(error) {
-            console.error("API error:", error);
+        .fail(function() {
             $("#results-container").html("<p>Failed to fetch results.</p>");
         });
 }
@@ -103,11 +108,14 @@ $(document).on("click", ".pagination-button", function () {
     fetchBooks(currentQuery, currentStartIndex);
 });
 
-
 $(document).on("click", ".book-card", function () {
-    console.log("Book clicked"); // DEBUG
 
     const bookId = $(this).data("book-id");
+
+    if (!bookId) {
+        alert("Book ID missing!");
+        return;
+    }
 
     const apiUrl = `https://www.googleapis.com/books/v1/volumes/${bookId}`;
 
@@ -145,25 +153,29 @@ function displayBookDetails(book) {
 
 
 function loadFeaturedBooks() {
-    const apiUrl = `https://www.googleapis.com/books/v1/volumes?q=bestsellers&maxResults=10&key=${API_KEY}`;
+    const apiUrl = `https://www.googleapis.com/books/v1/volumes?q=bestsellers&maxResults=10`;
 
     $.getJSON(apiUrl, function (response) {
         if (!response.items) return;
 
+        $("#collection-container").empty();
+
         response.items.forEach(function (book) {
-            const volumeInfo = book.volumeInfo;
+            const info = book.volumeInfo;
 
-            const title = volumeInfo.title || "No Title";
-            const thumbnail = volumeInfo.imageLinks?.thumbnail || "";
+            const title = info.title || "No Title";
 
-            const bookCard = `
+            let thumbnail = "https://via.placeholder.com/150x200?text=No+Image";
+            if (info.imageLinks && info.imageLinks.thumbnail) {
+                thumbnail = info.imageLinks.thumbnail.replace("http://", "https://");
+            }
+
+            $("#collection-container").append(`
                 <div class="book-card" data-book-id="${book.id}">
-                    <h3 class="book-title">${title}</h3>
-                    <img class="book-image" src="${thumbnail}" alt="${title}">
+                    <h3>${title}</h3>
+                    <img src="${thumbnail}">
                 </div>
-            `;
-
-            $("#collection-container").append(bookCard);
+            `);
         });
     });
 }
