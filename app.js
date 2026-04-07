@@ -156,4 +156,4 @@ function loadFeaturedBooks() {
 $(document).ready(function () {
     loadFeaturedBooks();
 });
-}
+
