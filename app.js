@@ -39,11 +39,13 @@ function fetchBooks(query, startIndex) {
         renderBookResults(response.items);
         renderPagination();
     })
-    .fail(function (error) {
-        console.error("API ERROR:", error);
-        $("#results-container").html("<p>Error fetching data.</p>");
-    });
-}
+    .fail(function (xhr, status, error) {
+    console.log("STATUS:", status);
+    console.log("ERROR:", error);
+    console.log("FULL RESPONSE:", xhr);
+
+    $("#results-container").html("<p>Error fetching data.</p>");
+});
 
 
 
