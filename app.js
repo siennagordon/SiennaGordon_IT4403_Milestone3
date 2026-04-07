@@ -1,4 +1,4 @@
-const API_KEY =AIzaSyC2vuDX-mAgbXuAiPymRrYXFjwembU3Wws;
+const API_KEY = "AIzaSyC2vuDX-mAgbXuAiPymRrYXFjwembU3Wws";
 let currentQuery = "";
 let currentStartIndex = 0;
 const RESULTS_PER_PAGE = 10;
