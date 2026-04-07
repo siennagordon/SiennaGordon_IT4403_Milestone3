@@ -18,11 +18,14 @@ $("#search-button").on("click", function () {
 function fetchBooks(query, startIndex) {
     const apiUrl = `https://www.googleapis.com/books/v1/volumes?q=${query}&startIndex=${startIndex}&maxResults=10&key=${API_KEY}`;
 
+    console.log("Fetching:", apiUrl);
+    
     $("#results-container").html("<p>Loading...</p>");
 
-    $.getJSON(apiUrl, function (response) {
+    $.getJSON(apiUrl) 
+              .done (function (response) {
 
-        console.log(response); // 🔥 DEBUG LINE
+        console.log("API Response:",response); // 🔥 DEBUG LINE
 
         if (!response.items) {
             $("#results-container").html("<p>No results found.</p>");
@@ -32,7 +35,8 @@ function fetchBooks(query, startIndex) {
         renderBookResults(response.items);
         renderPagination();
     })
-    .fail(function () {
+    .fail(function (error) {
+        console.error("API ERROR:", error);
         $("#results-container").html("<p>Error fetching data.</p>");
     });
 }
