@@ -6,6 +6,7 @@ const MAX_PAGES = 5;
 
 
 $("#search-button").on("click", function () {
+    console.log("Search clicked");
     currentQuery = $("#search-input").val().trim();
     currentStartIndex = 0;
 
