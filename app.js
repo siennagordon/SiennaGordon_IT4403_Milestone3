@@ -19,38 +19,46 @@ $("#search-button").on("click", function () {
     fetchBooks(query, 0);
 });
 
-function fetchBooks(query, startIndex) {
-    const apiUrl = `https://www.googleapis.com/books/v1/volumes?q=${encodeURIComponent(query)}&startIndex=${startIndex}&maxResults=10`;
-
-    console.log("API URL:", apiUrl);
-
+function fetchBooks(query, startIndex = 0) {
+    const apiUrl = `https://www.googleapis.com/books/v1/volumes?q=${encodeURIComponent(query)}&startIndex=${startIndex}&maxResults=10&key=${API_KEY}`;
+    
+    console.log("Fetching:", apiUrl);
+    
     $.getJSON(apiUrl)
-        .done(function (response) {
-            console.log("API RESPONSE:", response);
+        .done(function(response) {
+            console.log("API Response:", response);
 
-            if (!response.items) {
+            if (!response.items || response.items.length === 0) {
                 $("#results-container").html("<p>No results found.</p>");
                 return;
             }
 
             $("#results-container").empty();
-
-            response.items.forEach(function (book) {
+            response.items.forEach(function(book) {
                 const info = book.volumeInfo;
-
+                const title = info.title || "No title";
+                const thumbnail = info.imageLinks?.thumbnail || "";
                 $("#results-container").append(`
-                    <div>
-                        <h3>${info.title}</h3>
+                    <div class="book-card" data-id="${book.id}">
+                        <h3>${title}</h3>
+                        <img src="${thumbnail}" alt="${title}">
                     </div>
                 `);
             });
+
+            // Simple pagination
+            $("#pagination-container").html("");
+            for (let i = 0; i < Math.min(5, Math.ceil(response.totalItems / 10)); i++) {
+                $("#pagination-container").append(`
+                    <button class="pagination-button" data-start-index="${i * 10}">${i + 1}</button>
+                `);
+            }
         })
-        .fail(function (err) {
-            console.log("API FAILED:", err);
+        .fail(function(error) {
+            console.error("API error:", error);
+            $("#results-container").html("<p>Failed to fetch results.</p>");
         });
 }
-
-
 
 function renderBookResults(books) {
     $("#results-container").empty();
