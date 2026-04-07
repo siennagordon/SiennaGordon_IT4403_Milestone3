@@ -6,6 +6,7 @@ const MAX_PAGES = 5;
 
 
 $("#search-button").on("click", function () {
+    
     const inputValue = $("#search-input").val();
 
     console.log("Input value:", inputValue); // DEBUG
@@ -103,11 +104,24 @@ $(document).on("click", ".pagination-button", function () {
 
 
 $(document).on("click", ".book-card", function () {
+    console.log("Book clicked"); // DEBUG
+
     const bookId = $(this).data("book-id");
+
     const apiUrl = `https://www.googleapis.com/books/v1/volumes/${bookId}`;
 
     $.getJSON(apiUrl, function (book) {
-        displayBookDetails(book);
+        const info = book.volumeInfo;
+
+        const title = info.title || "No Title";
+        const authors = info.authors ? info.authors.join(", ") : "Unknown Author";
+        const description = info.description || "No description available.";
+
+        $("#details-container").html(`
+            <h2>${title}</h2>
+            <p><strong>Author(s):</strong> ${authors}</p>
+            <p>${description}</p>
+        `);
     });
 });
 
