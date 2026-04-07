@@ -1,4 +1,4 @@
-
+const API_KEY = "AIzaSyC2vuDX-mAgbXuAiPymRrYXFjwembU3Wws";
 let currentQuery = "";
 let currentStartIndex = 0;
 const RESULTS_PER_PAGE = 10;
@@ -15,9 +15,8 @@ $("#search-button").on("click", function () {
 }
 });
 
-const API_KEY = "AIzaSyC2vuDX-mAgbXuAiPymRrYXFjwembU3Wws";
 function fetchBooks(query, startIndex) {
-    const apiUrl = `https://www.googleapis.com/books/v1/volumes?q=${query}&startIndex=${startIndex}&maxResults=10&key=${AIzaSyC2vuDX-mAgbXuAiPymRrYXFjwembU3Wws}`;
+    const apiUrl = `https://www.googleapis.com/books/v1/volumes?q=${query}&startIndex=${startIndex}&maxResults=10&key=${API_KEY}`;
 
     $("#results-container").html("<p>Loading...</p>");
 
@@ -112,7 +111,7 @@ function displayBookDetails(book) {
 
 
 function loadFeaturedBooks() {
-    const apiUrl = `https://www.googleapis.com/books/v1/volumes?q=bestsellers&maxResults=10&key=${AIzaSyC2vuDX-mAgbXuAiPymRrYXFjwembU3Wws}`;
+    const apiUrl = `https://www.googleapis.com/books/v1/volumes?q=bestsellers&maxResults=10&key=${API_KEY}`;
 
     $.getJSON(apiUrl, function (response) {
         if (!response.items) return;
