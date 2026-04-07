@@ -13,18 +13,24 @@ $("#search-button").on("click", function () {
     currentQuery = $("#search-input").val().trim();
     currentStartIndex = 0;
 
-    if (currentQuery !== "") {
-        fetchBooks(currentQuery, currentStartIndex);
-    }
+    if (!currentQuery) {
+    alert("Please enter a search term.");
+    return;
+}
 });
 
 // ==============================
 // FETCH BOOKS (SEARCH)
 // ==============================
 function fetchBooks(query, startIndex) {
-    const apiUrl = `https://www.googleapis.com/books/v1/volumes?q=${query}&startIndex=${startIndex}&maxResults=${RESULTS_PER_PAGE}`;
+    const apiUrl = `https://www.googleapis.com/books/v1/volumes?q=${query}&startIndex=${startIndex}&maxResults=10`;
+
+    $("#results-container").html("<p>Loading...</p>");
 
     $.getJSON(apiUrl, function (response) {
+
+        console.log(response); // 🔥 DEBUG LINE
+
         if (!response.items) {
             $("#results-container").html("<p>No results found.</p>");
             return;
@@ -32,7 +38,11 @@ function fetchBooks(query, startIndex) {
 
         renderBookResults(response.items);
         renderPagination();
+    })
+    .fail(function () {
+        $("#results-container").html("<p>Error fetching data.</p>");
     });
+}
 }
 
 // ==============================
