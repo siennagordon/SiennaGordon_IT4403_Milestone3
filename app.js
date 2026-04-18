@@ -1,5 +1,26 @@
+const API_KEY = "AIzaSyA8E-AiV7BriCfag6TJIfu0aaQgTfbHQVY";
 let currentQuery = "";
 let currentStartIndex = 0;
+let isLoading = false;
+
+function fetchBooks(query, startIndex = 0) {
+
+    if (isLoading) return; // 🚫 stop spam
+    isLoading = true;
+
+    const apiUrl = `https://www.googleapis.com/books/v1/volumes?q=${encodeURIComponent(query)}&startIndex=${startIndex}&maxResults=10`;
+
+    $.getJSON(apiUrl)
+        .done(function (response) {
+            renderBookResults(response.items);
+        })
+        .fail(function () {
+            $("#results-container").html("<p>Failed to fetch data.</p>");
+        })
+        .always(function () {
+            isLoading = false;
+        });
+}
 const RESULTS_PER_PAGE = 10;
 const MAX_PAGES = 5;
 $("#grid-view").click(function () {
@@ -65,10 +86,13 @@ function fetchBooks(query, startIndex = 0) {
 
             renderPagination();
         })
-        .fail(function() {
-            $("#results-container").html("<p>Failed to fetch results.</p>");
-        });
-}
+        .fail(function (xhr, status, error) {
+    console.log("STATUS:", status);
+    console.log("ERROR:", error);
+    console.log("RESPONSE:", xhr);
+
+    $("#results-container").html("<p>Failed to fetch data.</p>");
+});
 
 function renderBookResults(books) {
     const template = $("#book-template").html();
@@ -188,4 +212,4 @@ function loadFeaturedBooks() {
 $(document).ready(function () {
     loadFeaturedBooks();
 });
-
+    
