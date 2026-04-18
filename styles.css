@@ -3,17 +3,6 @@ body {
     margin: 20px;
     background-color: #f5f7fa;
 }
-.grid-view {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
-    gap: 15px;
-}
-
-.list-view .book-card {
-    display: flex;
-    gap: 15px;
-}
-
 /* Header */
 header {
     text-align: center;
@@ -47,6 +36,18 @@ header {
 }
 
 /* Grid Layout */
+
+.grid-view {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+    gap: 15px;
+}
+
+.list-view .book-card {
+    display: flex;
+    gap: 15px;
+}
+
 #results-container,
 #collection-container {
     display: grid;
