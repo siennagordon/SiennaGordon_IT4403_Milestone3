@@ -5,16 +5,37 @@ let isLoading = false;
 
 function fetchBooks(query, startIndex = 0) {
 
-    if (isLoading) return; // 🚫 stop spam
+    if (isLoading) return;
     isLoading = true;
+
+    if (!query || query.trim() === "") {
+        $("#results-container").html("<p>Please enter a search term.</p>");
+        isLoading = false;
+        return;
+    }
+
+    currentQuery = query;
 
     const apiUrl = `https://www.googleapis.com/books/v1/volumes?q=${encodeURIComponent(query)}&startIndex=${startIndex}&maxResults=10`;
 
+    $("#results-container").html("<p>Loading...</p>");
+
     $.getJSON(apiUrl)
-        .done(function (response) {
+        .done(function(response) {
+
+            if (!response.items || response.items.length === 0) {
+                $("#results-container").html("<p>No results found.</p>");
+                return;
+            }
+
             renderBookResults(response.items);
+            renderPagination();
         })
-        .fail(function () {
+        .fail(function (xhr, status, error) {
+            console.log("STATUS:", status);
+            console.log("ERROR:", error);
+            console.log("RESPONSE:", xhr);
+
             $("#results-container").html("<p>Failed to fetch data.</p>");
         })
         .always(function () {
@@ -44,55 +65,6 @@ $("#search-button").on("click", function () {
     fetchBooks(query, 0);
 });
 
-function fetchBooks(query, startIndex = 0) {
-
-    if (!query || query.trim() === "") {
-        $("#results-container").html("<p>Please enter a search term.</p>");
-        return;
-    }
-
-    currentQuery = query; // ✅ FIX: store query for pagination
-
-    const apiUrl = `https://www.googleapis.com/books/v1/volumes?q=${encodeURIComponent(query)}&startIndex=${startIndex}&maxResults=10`;
-
-    console.log("Fetching:", apiUrl);
-
-    $.getJSON(apiUrl)
-        .done(function(response) {
-
-            if (!response.items || response.items.length === 0) {
-                $("#results-container").html("<p>No results found.</p>");
-                return;
-            }
-
-            $("#results-container").empty();
-
-            response.items.forEach(function(book) {
-                const info = book.volumeInfo;
-                const title = info.title || "No title";
-
-                let thumbnail = "https://via.placeholder.com/150x200?text=No+Image";
-                if (info.imageLinks && info.imageLinks.thumbnail) {
-                    thumbnail = info.imageLinks.thumbnail.replace("http://", "https://");
-                }
-
-                $("#results-container").append(`
-                    <div class="book-card" data-book-id="${book.id}">
-                        <h3>${title}</h3>
-                        <img src="${thumbnail}" alt="${title}">
-                    </div>
-                `);
-            });
-
-            renderPagination();
-        })
-        .fail(function (xhr, status, error) {
-    console.log("STATUS:", status);
-    console.log("ERROR:", error);
-    console.log("RESPONSE:", xhr);
-
-    $("#results-container").html("<p>Failed to fetch data.</p>");
-});
 
 function renderBookResults(books) {
     const template = $("#book-template").html();
