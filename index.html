@@ -6,10 +6,27 @@
     <link rel="icon" href="data:,">
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="app.js" defer></script>
+    <script src="https://unpkg.com/mustache@latest/mustache.min.js"></script>
 </head>
 
 <body>
     <h1>Book Search App</h1>
+    <script id="book-template" type="x-tmpl-mustache">
+<div class="book-card" data-book-id="{{id}}">
+    <img class="book-image" src="{{thumbnail}}" alt="{{title}}">
+    <h3>{{title}}</h3>
+</div>
+</script>
+    <script id="details-template" type="x-tmpl-mustache">
+<div class="details-card">
+    <img src="{{thumbnail}}" alt="{{title}}">
+    <div>
+        <h2>{{title}}</h2>
+        <p><strong>Author(s):</strong> {{authors}}</p>
+        <p>{{description}}</p>
+    </div>
+</div>
+</script>
 
     <!-- SEARCH -->
     <input type="text" id="search-input" placeholder="Search books...">
