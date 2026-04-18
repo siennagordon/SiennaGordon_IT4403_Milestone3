@@ -77,7 +77,7 @@ function renderBookResults(books) {
             id: book.id,
             title: info.title || "No Title",
             thumbnail: info.imageLinks?.thumbnail
-                ? info.imageLinks.thumbnail.replace("http://", "https://")
+                ? info.imageLinks.thumbnail.replace("http://", "https://");
                 : "https://via.placeholder.com/150x200?text=No+Image"
         };
 
