@@ -3,7 +3,13 @@ let currentQuery = "";
 let currentStartIndex = 0;
 const RESULTS_PER_PAGE = 10;
 const MAX_PAGES = 5;
+$("#grid-view").click(function () {
+    $("#results-container").removeClass("list-view").addClass("grid-view");
+});
 
+$("#list-view").click(function () {
+    $("#results-container").removeClass("grid-view").addClass("list-view");
+});
 
 $("#search-button").on("click", function () {
 
