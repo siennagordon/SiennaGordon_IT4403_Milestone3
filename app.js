@@ -66,22 +66,22 @@ function fetchBooks(query, startIndex = 0) {
 }
 
 function renderBookResults(books) {
+    const template = $("#book-template").html();
     $("#results-container").empty();
 
     books.forEach(function (book) {
-        const volumeInfo = book.volumeInfo;
+        const info = book.volumeInfo;
 
-        const title = volumeInfo.title || "No Title Available";
-        const thumbnail = volumeInfo.imageLinks?.thumbnail || "";
+        const data = {
+            id: book.id,
+            title: info.title || "No Title",
+            thumbnail: info.imageLinks?.thumbnail
+                ? info.imageLinks.thumbnail.replace("http://", "https://")
+                : "https://via.placeholder.com/150x200?text=No+Image"
+        };
 
-        const bookCard = `
-            <div class="book-card" data-book-id="${book.id}">
-                <h3 class="book-title">${title}</h3>
-                <img class="book-image" src="${thumbnail}" alt="${title}">
-            </div>
-        `;
-
-        $("#results-container").append(bookCard);
+        const html = Mustache.render(template, data);
+        $("#results-container").append(html);
     });
 }
 
