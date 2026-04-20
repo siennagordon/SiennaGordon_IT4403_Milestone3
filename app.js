@@ -1,15 +1,10 @@
-// =====================
-// GLOBAL VARIABLES
-// =====================
 let currentQuery = "";
-let currentStartIndex = 0;
 const RESULTS_PER_PAGE = 10;
 const MAX_PAGES = 5;
-let isLoading = false;
 
 
 // =====================
-// SEARCH BUTTON
+// SEARCH
 // =====================
 $("#search-button").on("click", function () {
 
@@ -21,78 +16,60 @@ $("#search-button").on("click", function () {
     }
 
     const query = inputValue.trim();
+    currentQuery = query;
+
     fetchBooks(query, 0);
 });
 
 
 // =====================
-// FETCH BOOKS (MAIN)
+// FETCH BOOKS
 // =====================
 function fetchBooks(query, startIndex = 0) {
 
-    if (isLoading) return;
-    isLoading = true;
-
-    if (!query || query.trim() === "") {
-        $("#results-container").html("<p>Please enter a search term.</p>");
-        isLoading = false;
-        return;
-    }
-
-    currentQuery = query;
-
     const apiUrl = `https://www.googleapis.com/books/v1/volumes?q=${encodeURIComponent(query)}&startIndex=${startIndex}&maxResults=${RESULTS_PER_PAGE}`;
-
-    console.log("Fetching:", apiUrl);
 
     $("#results-container").html("<p>Loading...</p>");
 
     $.getJSON(apiUrl)
         .done(function (response) {
 
-            if (!response.items || response.items.length === 0) {
+            if (!response.items) {
                 $("#results-container").html("<p>No results found.</p>");
                 return;
             }
 
-            renderBookResults(response.items);
+            renderResults(response.items);
             renderPagination(response.totalItems);
         })
-        .fail(function (xhr, status, error) {
-            console.log("STATUS:", status);
-            console.log("ERROR:", error);
-            console.log("STATUS CODE:", xhr.status);
-
+        .fail(function () {
             $("#results-container").html("<p>Failed to fetch data.</p>");
-        })
-        .always(function () {
-            isLoading = false;
         });
 }
 
 
 // =====================
-// RENDER RESULTS (MUSTACHE)
+// RENDER RESULTS (GRID)
 // =====================
-function renderBookResults(books) {
+function renderResults(books) {
 
-    const template = $("#book-template").html();
     $("#results-container").empty();
 
     books.forEach(function (book) {
 
         const info = book.volumeInfo;
 
-        const data = {
-            id: book.id,
-            title: info.title || "No Title",
-            thumbnail: info.imageLinks?.thumbnail
-                ? info.imageLinks.thumbnail.replace("http://", "https://")
-                : "https://via.placeholder.com/150x200?text=No+Image"
-        };
+        const title = info.title || "No Title";
+        const thumbnail = info.imageLinks?.thumbnail
+            ? info.imageLinks.thumbnail.replace("http://", "https://")
+            : "https://via.placeholder.com/150x200?text=No+Image";
 
-        const html = Mustache.render(template, data);
-        $("#results-container").append(html);
+        $("#results-container").append(`
+            <div class="book-card" data-book-id="${book.id}">
+                <img src="${thumbnail}">
+                <h3>${title}</h3>
+            </div>
+        `);
     });
 }
 
@@ -104,22 +81,17 @@ function renderPagination(totalItems) {
 
     $("#pagination-container").empty();
 
-    const totalPages = Math.min(
-        MAX_PAGES,
-        Math.ceil(totalItems / RESULTS_PER_PAGE)
-    );
+    const totalPages = Math.min(MAX_PAGES, Math.ceil(totalItems / RESULTS_PER_PAGE));
 
-    for (let page = 0; page < totalPages; page++) {
+    for (let i = 0; i < totalPages; i++) {
 
-        const startIndex = page * RESULTS_PER_PAGE;
+        const startIndex = i * RESULTS_PER_PAGE;
 
-        const button = `
-            <button class="pagination-button" data-start-index="${startIndex}">
-                ${page + 1}
+        $("#pagination-container").append(`
+            <button class="page-btn" data-start="${startIndex}">
+                ${i + 1}
             </button>
-        `;
-
-        $("#pagination-container").append(button);
+        `);
     }
 }
 
@@ -127,26 +99,19 @@ function renderPagination(totalItems) {
 // =====================
 // PAGINATION CLICK
 // =====================
-$(document).on("click", ".pagination-button", function () {
+$(document).on("click", ".page-btn", function () {
 
-    const startIndex = $(this).data("start-index");
-    currentStartIndex = startIndex;
-
+    const startIndex = $(this).data("start");
     fetchBooks(currentQuery, startIndex);
 });
 
 
 // =====================
-// BOOK CLICK → DETAILS
+// BOOK DETAILS
 // =====================
 $(document).on("click", ".book-card", function () {
 
     const bookId = $(this).data("book-id");
-
-    if (!bookId) {
-        alert("Book ID missing!");
-        return;
-    }
 
     const apiUrl = `https://www.googleapis.com/books/v1/volumes/${bookId}`;
 
@@ -154,25 +119,21 @@ $(document).on("click", ".book-card", function () {
 
         const info = book.volumeInfo;
 
-        const data = {
-            title: info.title || "No Title",
-            authors: info.authors ? info.authors.join(", ") : "Unknown Author",
-            description: info.description || "No description available.",
-            thumbnail: info.imageLinks?.thumbnail
-                ? info.imageLinks.thumbnail.replace("http://", "https://")
-                : "https://via.placeholder.com/150x200"
-        };
+        const title = info.title || "No Title";
+        const authors = info.authors ? info.authors.join(", ") : "Unknown Author";
+        const description = info.description || "No description available.";
 
-        const template = $("#details-template").html();
-        const html = Mustache.render(template, data);
-
-        $("#details-container").html(html);
+        $("#details-container").html(`
+            <h2>${title}</h2>
+            <p><strong>Author(s):</strong> ${authors}</p>
+            <p>${description}</p>
+        `);
     });
 });
 
 
 // =====================
-// LOAD FEATURED BOOKS
+// FEATURED COLLECTION
 // =====================
 function loadFeaturedBooks() {
 
@@ -182,52 +143,24 @@ function loadFeaturedBooks() {
 
         if (!response.items) return;
 
-        const template = $("#book-template").html();
-        $("#collection-container").empty();
-
         response.items.forEach(function (book) {
 
             const info = book.volumeInfo;
 
-            const data = {
-                id: book.id,
-                title: info.title || "No Title",
-                thumbnail: info.imageLinks?.thumbnail
-                    ? info.imageLinks.thumbnail.replace("http://", "https://")
-                    : "https://via.placeholder.com/150x200?text=No+Image"
-            };
+            const title = info.title || "No Title";
+            const thumbnail = info.imageLinks?.thumbnail
+                ? info.imageLinks.thumbnail.replace("http://", "https://")
+                : "https://via.placeholder.com/150x200?text=No+Image";
 
-            const html = Mustache.render(template, data);
-            $("#collection-container").append(html);
+            $("#collection-container").append(`
+                <div class="book-card" data-book-id="${book.id}">
+                    <img src="${thumbnail}">
+                    <h3>${title}</h3>
+                </div>
+            `);
         });
     });
 }
-
-
-// =====================
-// VIEW TOGGLES (GRID / LIST)
-// =====================
-$("#grid-view").click(function () {
-    $("#results-container").removeClass("list-view").addClass("grid-view");
-});
-
-$("#list-view").click(function () {
-    $("#results-container").removeClass("grid-view").addClass("list-view");
-});
-
-
-// =====================
-// SECTION SWITCH (SEARCH / COLLECTION)
-// =====================
-$("#show-search").click(function () {
-    $("#results-section").show();
-    $("#collection-section").hide();
-});
-
-$("#show-collection").click(function () {
-    $("#results-section").hide();
-    $("#collection-section").show();
-});
 
 
 // =====================
