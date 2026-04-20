@@ -53,7 +53,8 @@ $("#list-view").click(function () {
 });
 
 $("#search-button").on("click", function () {
-
+  $("#results-section").show();
+    $("#collection-section").hide();
     const inputValue = $("#search-input").val();
 
     if (!inputValue || inputValue.trim() === "") {
@@ -63,6 +64,10 @@ $("#search-button").on("click", function () {
 
     const query = inputValue.trim();
     fetchBooks(query, 0);
+});
+$("#show-collection").click(function () {
+    $("#results-section").hide();
+    $("#collection-section").show();
 });
 
 
