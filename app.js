@@ -124,17 +124,25 @@ $(document).on("click", ".book-card", function () {
     }
 
     const apiUrl = `https://www.googleapis.com/books/v1/volumes/${bookId}`;
+    
+$.getJSON(apiUrl, function (book) {
+    const info = book.volumeInfo;
 
-    $.getJSON(apiUrl, function (book) {
-        const info = book.volumeInfo;
+    const title = info.title || "No Title";
+    const authors = info.authors ? info.authors.join(", ") : "Unknown Author";
+    const description = info.description || "No description available.";
 
-        const title = info.title || "No Title";
-        const authors = info.authors ? info.authors.join(", ") : "Unknown Author";
-        const description = info.description || "No description available.";
-         thumbnail: info.imageLinks?.thumbnail
-                ? info.imageLinks.thumbnail.replace("http://", "https://")
-                : "https://via.placeholder.com/150x200"
-        };
+    const thumbnail = info.imageLinks?.thumbnail
+        ? info.imageLinks.thumbnail.replace("http://", "https://")
+        : "https://via.placeholder.com/150x200";
+
+    $("#details-container").html(`
+        <h2>${title}</h2>
+        <p><strong>Author(s):</strong> ${authors}</p>
+        <img src="${thumbnail}">
+        <p>${description}</p>
+    `);
+});
 
         const template = $("#details-template").html();
         const html = Mustache.render(template, data);
