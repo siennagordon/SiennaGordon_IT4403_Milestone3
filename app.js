@@ -126,6 +126,15 @@ $(document).on("click", ".book-card", function () {
         const title = info.title || "No Title";
         const authors = info.authors ? info.authors.join(", ") : "Unknown Author";
         const description = info.description || "No description available.";
+         thumbnail: info.imageLinks?.thumbnail
+                ? info.imageLinks.thumbnail.replace("http://", "https://")
+                : "https://via.placeholder.com/150x200"
+        };
+
+        const template = $("#details-template").html();
+        const html = Mustache.render(template, data);
+
+        $("#details-container").html(html);
 
         $("#details-container").html(`
             <h2>${title}</h2>
