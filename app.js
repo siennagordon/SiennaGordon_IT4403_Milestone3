@@ -134,7 +134,7 @@ $(document).on("click", ".book-card", function () {
          thumbnail: info.imageLinks?.thumbnail
                 ? info.imageLinks.thumbnail.replace("http://", "https://")
                 : "https://via.placeholder.com/150x200"
-        )};
+        };
 
         const template = $("#details-template").html();
         const html = Mustache.render(template, data);
